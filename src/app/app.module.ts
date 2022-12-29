@@ -1,8 +1,11 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { Routes, RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { NgxSpinnerModule } from "ngx-spinner";
+import { AdminGuard } from './guards/admin.guard';
 
 import { AppComponent } from './app.component';
 import { AcessarContaComponent } from './pages/acessar-conta/acessar-conta.component';
@@ -17,8 +20,8 @@ const routes: Routes = [
   { path: 'acessar-conta', component: AcessarContaComponent },
   { path: 'criar-conta', component: CriarContaComponent },
   { path: 'recuperar-senha', component: RecuperarSenhaComponent },
-  { path: 'alterar-senha', component: AlterarSenhaComponent },
-  { path: 'gerenciar-produtos', component: GerenciarProdutosComponent }
+  { path: 'alterar-senha', component: AlterarSenhaComponent, canActivate: [AdminGuard] },
+  { path: 'gerenciar-produtos', component: GerenciarProdutosComponent, canActivate: [AdminGuard] }
 ];
 
 @NgModule({
@@ -35,9 +38,12 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
+    NgxSpinnerModule,
   ],
-  providers: [],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  providers: [AdminGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

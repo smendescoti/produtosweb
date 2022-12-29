@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { NgxSpinnerService } from "ngx-spinner";
 
 @Component({
   selector: 'app-acessar-conta',
@@ -15,7 +16,8 @@ export class AcessarContaComponent {
 
   //construtor
   constructor(
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private spinnerService: NgxSpinnerService
   ) {
 
   }
@@ -38,6 +40,8 @@ export class AcessarContaComponent {
   //função executada pelo SUBMIT do formulario
   onSubmit(): void {
 
+    this.spinnerService.show();
+
     //limpando as mensagens
     this.mensagem_erro = '';
 
@@ -48,13 +52,20 @@ export class AcessarContaComponent {
     )
       .subscribe({
         next: (data: any) => { //resposta de sucesso da API
+
+          //salvando os dados do usuário autenticado na memória do navegador
           localStorage.setItem('dados-usuario', JSON.stringify(data));
-          window.location.href = '/gerenciar-produtos';
+
           this.formLogin.reset(); //limpando o formulário
+          
+          //redirecionar o usuário para a página de gerenciar produtos
+          window.location.href = '/gerenciar-produtos';          
         },
         error: (e) => { //resposta de erro da API
           this.mensagem_erro = e.error.mensagem; //exibindo a mensagem
         }
-      });
+      }).add(
+        () => this.spinnerService.hide()
+      );
   }
 }
